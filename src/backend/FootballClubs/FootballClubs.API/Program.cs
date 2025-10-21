@@ -1,7 +1,8 @@
-using System.Runtime.CompilerServices;
 using FootballClubs.Auth;
 using FootballClubs.Auth.Persistence;
 using FootballClubs.Auth.Persistence.DataSeeders;
+using FootballClubs.Profile.Application.IoC;
+using FootballClubs.Profile.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -18,13 +19,18 @@ builder.Services.AddOptions<AppAuthorizationOptions>()
     .ValidateOnStart();
 
 builder.Services.AddFootballClubsAuth(builder.Configuration);
+builder.Services.AddProfileApplication(builder.Configuration);
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
-    db.Database.EnsureCreated();
+    List<DbContext> dbContexts =
+    [
+        scope.ServiceProvider.GetRequiredService<AuthDbContext>(),
+        scope.ServiceProvider.GetRequiredService<ProfilesDbContext>()
+    ];
+    dbContexts.ForEach(x => x.Database.EnsureCreated());
 }
 
 // Configure the HTTP request pipeline.

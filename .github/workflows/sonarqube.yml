@@ -43,5 +43,6 @@ jobs:
         shell: powershell
         run: |
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"pmozola_FootballClubs" /o:"pmozola-github" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build .\src\backend\FootballClubs.sln
+          ls
+          dotnet build \src\backend\FootballClubs.sln
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"

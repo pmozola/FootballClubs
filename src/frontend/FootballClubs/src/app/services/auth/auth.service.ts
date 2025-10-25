@@ -14,8 +14,8 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) { }
 
   login(request: LoginRequestModel) {
-    return this.http.post(apiUrls.auth.login, request).pipe(
-      tap((res: any) => {
+    return this.http.post<Credentials>(apiUrls.auth.login, request).pipe(
+      tap((res: Credentials) => {
         localStorage.setItem('token', res.token);
         this.router.navigate(['folder/inbox']);
       })
@@ -39,4 +39,8 @@ export interface LoginRequestModel{
 export interface RegisterRequestModel{
     email:string,
     password:string
+}
+
+export interface Credentials{
+  token:string
 }

@@ -2,6 +2,7 @@ using System.Text;
 using FootballClubs.Auth.Persistence;
 using FootballClubs.Auth.Persistence.DataSeeders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +15,6 @@ public static class AuthExtension
 {
     public static IServiceCollection AddFootballClubsAuth(this IServiceCollection services, IConfiguration configuration)
     {
-        services.ConfigureAuthentication(configuration);
-
         services
             .AddTransient<IRegisterService, RegisterService>()
             .AddTransient<ILoginService, LoginService>()
@@ -25,7 +24,7 @@ public static class AuthExtension
         
         services.AddDbContext<AuthDbContext>(options => 
             options.UseSqlServer(configuration.GetConnectionString(AuthDbContext.ConnectionStringSettingName)));
-        
+        services.ConfigureAuthentication(configuration);
         return services;
     }
 
@@ -33,36 +32,30 @@ public static class AuthExtension
     {
         services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<AuthDbContext>()
-            .AddDefaultTokenProviders()
-            .AddRoles<IdentityRole>();
+            .AddDefaultTokenProviders();
         
-        services.AddAuthorizationBuilder()
-            .AddPolicy(
-                "AdminPolicy",
-                policy =>
+        services.AddAuthentication(options =>
                 {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireRole("Admin");
-                })
-            .AddPolicy(
-                "UserPolicy",
-                policy =>
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                }
+            )
+            .AddJwtBearer(options =>
                 {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireRole("User");
-                });
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                    
+                        ClockSkew = TimeSpan.Zero,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration[$"{AppAuthorizationOptions.SectionName}:{nameof(AppAuthorizationOptions.SecurityKey)}"]!))
+                    };
+                }
+            );
         
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-        {
-            var key = Encoding.ASCII.GetBytes(configuration["JwtKey"]!);
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key)
-            };
-        } );
 
         return services;
     }

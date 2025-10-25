@@ -27,7 +27,6 @@
       @if ((getPassword.dirty || getPassword.touched) && getPassword.errors) {
       <div class="errors">
         @if (getPassword.hasError('required')) {<span >Password is required</span>}
-        @if (getPassword.hasError('minlength')) {<span >Password needs to be 6 characters</span>}
       </div>
       }
 

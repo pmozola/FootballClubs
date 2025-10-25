@@ -18,8 +18,8 @@ export class LoginPage implements OnInit {
   constructor(
     private fb: FormBuilder, private menuCtrl: MenuController, private authService: AuthService) {
     this.credentials = this.fb.group({
-      email: [null, [Validators.email]],
-      password: [null, [Validators.required, Validators.minLength(6)]]
+      email: ['admin@test.com', [Validators.email]],
+      password: ['Abc123!', [Validators.required]]
     });
   }
 

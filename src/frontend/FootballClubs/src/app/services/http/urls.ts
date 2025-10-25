@@ -4,5 +4,8 @@ export const apiUrls = {
     auth:{
         register: environment.apiUrl + "auth/register",
         login: environment.apiUrl + "auth/login"
+    },
+    weather:{
+        get: environment.apiUrl + 'WeatherForecast'
     }
 }

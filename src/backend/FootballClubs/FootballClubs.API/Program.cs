@@ -7,8 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+builder.Services.AddFootballClubsAuth(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -18,7 +24,7 @@ builder.Services.AddOptions<AppAuthorizationOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
-builder.Services.AddFootballClubsAuth(builder.Configuration);
+
 builder.Services.AddProfileApplication(builder.Configuration);
 
 var app = builder.Build();
@@ -47,7 +53,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("CorsPolicy");
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllers();

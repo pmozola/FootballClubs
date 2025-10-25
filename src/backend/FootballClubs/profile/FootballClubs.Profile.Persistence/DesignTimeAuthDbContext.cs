@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace FootballClubs.Auth.Persistence;
+namespace FootballClubs.Profile.Persistence;
 
-public class DesignTimeAuthDbContext : IDesignTimeDbContextFactory<AuthDbContext>
+public class DesignTimeAuthDbContext : IDesignTimeDbContextFactory<ProfilesDbContext>
 {
-    public AuthDbContext CreateDbContext(string[] args)
+    public ProfilesDbContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<AuthDbContext>();
+        var optionsBuilder = new DbContextOptionsBuilder<ProfilesDbContext>();
         optionsBuilder.UseSqlServer();
 
-        return new AuthDbContext(optionsBuilder.Options);
+        return new ProfilesDbContext(optionsBuilder.Options);
     }
 }

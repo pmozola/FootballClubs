@@ -1,8 +1,10 @@
+using FootballClubs.Profile.Domain.Shared;
+
 namespace FootballClubs.Profile.Domain;
 
-public class UserProfile
+public class UserProfile : Entity, IAggregateRoot
 {
-    public required string PhoneNumber { get; set; }
+    public required string PhoneNumber { get; init; }
     public required string LastName { get; init; }
     public required string FirstName { get; init; }
 
